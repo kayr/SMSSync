@@ -44,6 +44,8 @@ import org.addhen.smssync.controllers.LogController;
 import org.addhen.smssync.models.Log;
 import org.addhen.smssync.models.PhoneStatusInfo;
 import org.addhen.smssync.prefs.Prefs;
+import org.addhen.smssync.services.CheckTaskService;
+import org.addhen.smssync.services.SmsSyncServices;
 import org.addhen.smssync.state.LogEvent;
 import org.addhen.smssync.util.LogUtil;
 import org.addhen.smssync.util.Util;
@@ -154,8 +156,15 @@ public class LogFragment extends BaseListFragment<LogView, Log, LogAdapter> impl
             // load all blacklisted phone numbers
             performDelete();
         }
+
+        if (item.getItemId() == R.id.forcSync) {
+            // load all blacklisted phone numbers
+            performSync();
+        }
         return super.onOptionsItemSelected(item);
     }
+
+
 
     @Subscribe
     public void reloadLog(LogEvent event) {
@@ -243,6 +252,11 @@ public class LogFragment extends BaseListFragment<LogView, Log, LogAdapter> impl
                         });
         AlertDialog alert = builder.create();
         alert.show();
+    }
+
+    private void performSync(){
+        Util.logActivities(getActivity(), "Forcing A Sync");
+        SmsSyncServices.sendWakefulWork(getActivity(), CheckTaskService.class);
     }
 
     private String makeShareableMessage() {
