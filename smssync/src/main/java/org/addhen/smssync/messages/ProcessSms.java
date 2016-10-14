@@ -406,11 +406,9 @@ public class ProcessSms {
         message.setStatus(Message.Status.UNCONFIRMED);
 
         if (prefs.smsReportDelivery().get()) {
-            sms.sendMultipartTextMessage(message.getPhoneNumber(), null, parts, sentIntents,
-                    deliveryIntents);
+            SimUtil.sendSMS(context,message.getPhoneNumber(),parts, sentIntents, deliveryIntents);
         } else {
-            sms.sendMultipartTextMessage(message.getPhoneNumber(), null, parts, sentIntents,
-                    null);
+			SimUtil.sendSMS(context,message.getPhoneNumber(),parts, sentIntents, null);
         }
 
         return false;
