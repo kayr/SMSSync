@@ -54,7 +54,7 @@ public class SimUtil {
 
 			if (selectedSim != null) {
 				Util.logActivities(ctx,
-						"DualSim: Sending SMS With : " + selectedSim.getDisplay_name() + ": Number: to(" + toNum + ")");
+						"DualSim: Sending SMS to(" + toNum + ") Using: [" + selectedSim.getDisplay_name() + "]");
 				return sendSMS(ctx, selectedSim.getSlot(), toNum, smsTextlist, sentIntentList, deliveryIntentList);
 			}
 
@@ -77,7 +77,9 @@ public class SimUtil {
 			ArrayList<PendingIntent> sentIntentList, ArrayList<PendingIntent> deliveryIntentList) {
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-			SmsManager smsManagerForSubscriptionId = SmsManager.getSmsManagerForSubscriptionId(simID);
+			SubscriptionInfo subscriptionInfo = SubscriptionManager.from(ctx).getActiveSubscriptionInfoForSimSlotIndex(simID);
+			int subscriptionId = subscriptionInfo.getSubscriptionId();
+			SmsManager smsManagerForSubscriptionId = SmsManager.getSmsManagerForSubscriptionId(subscriptionId);
 			smsManagerForSubscriptionId.sendMultipartTextMessage(toNum, null, smsTextlist, sentIntentList,
 					deliveryIntentList);
 
@@ -151,7 +153,6 @@ public class SimUtil {
 			} else {
 				throw new Exception("can not get service which for sim '" + simID + "', only 0,1 accepted as values");
 			}
-
 
 			Method method = Class.forName("android.os.ServiceManager").getDeclaredMethod("getService", String.class);
 			method.setAccessible(true);
